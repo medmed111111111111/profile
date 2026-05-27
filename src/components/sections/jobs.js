@@ -71,26 +71,30 @@ const StyledTabButton = styled.button`
   display: flex;
   align-items: center;
   width: 100%;
-  height: var(--tab-height);
-  padding: 0 20px 2px;
+  height: auto;
+  min-height: var(--tab-height);
+  padding: 10px 20px;
   border-left: 2px solid var(--lightest-navy);
   background-color: transparent;
   color: ${({ isActive }) => (isActive ? 'var(--green)' : 'var(--slate)')};
   font-family: var(--font-mono);
   font-size: var(--fz-xs);
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 
   @media (max-width: 768px) {
-    padding: 0 15px 2px;
+    padding: 10px 15px;
   }
   @media (max-width: 600px) {
     ${({ theme }) => theme.mixins.flexCenter};
-    min-width: 120px;
-    padding: 0 15px;
+    min-width: 140px;
+    padding: 10px 15px;
     border-left: 0;
     border-bottom: 2px solid var(--lightest-navy);
     text-align: center;
+    white-space: normal;
+    word-break: break-word;
   }
 
   &:hover,
@@ -178,7 +182,6 @@ const Jobs = () => {
               company
               location
               range
-              url
             }
             html
           }
@@ -273,7 +276,7 @@ const Jobs = () => {
           {jobsData &&
             jobsData.map(({ node }, i) => {
               const { frontmatter, html } = node;
-              const { title, url, company, range } = frontmatter;
+              const { title, company, range } = frontmatter;
 
               return (
                 <CSSTransition key={i} in={activeTabId === i} timeout={250} classNames="fade">
@@ -288,9 +291,7 @@ const Jobs = () => {
                       <span>{title}</span>
                       <span className="company">
                         &nbsp;@&nbsp;
-                        <a href={url} className="inline-link">
-                          {company}
-                        </a>
+                        {company}
                       </span>
                     </h3>
 

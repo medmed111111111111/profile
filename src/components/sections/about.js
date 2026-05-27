@@ -18,6 +18,7 @@ const StyledAboutSection = styled.section`
     }
   }
 `;
+
 const StyledText = styled.div`
   ul.skills-list {
     display: grid;
@@ -46,6 +47,7 @@ const StyledText = styled.div`
     }
   }
 `;
+
 const StyledPic = styled.div`
   position: relative;
   max-width: 300px;
@@ -61,7 +63,7 @@ const StyledPic = styled.div`
     position: relative;
     width: 100%;
     border-radius: var(--border-radius);
-    background-color: var(--green);
+    background-color: transparent;
 
     &:hover,
     &:focus {
@@ -71,37 +73,19 @@ const StyledPic = styled.div`
       &:after {
         transform: translate(8px, 8px);
       }
-
-      .img {
-        filter: none;
-        mix-blend-mode: normal;
-      }
     }
 
     .img {
       position: relative;
       border-radius: var(--border-radius);
-      mix-blend-mode: multiply;
-      filter: grayscale(100%) contrast(1);
       transition: var(--transition);
-    }
-
-    &:before,
-    &:after {
-      content: '';
       display: block;
-      position: absolute;
       width: 100%;
-      height: 100%;
-      border-radius: var(--border-radius);
-      transition: var(--transition);
+      height: auto;
     }
 
     &:before {
-      top: 0;
-      left: 0;
-      background-color: var(--navy);
-      mix-blend-mode: screen;
+      display: none;
     }
 
     &:after {
@@ -121,11 +105,20 @@ const About = () => {
     if (prefersReducedMotion) {
       return;
     }
-
     sr.reveal(revealContainer.current, srConfig());
-  }, []);
+  }, [prefersReducedMotion]);
 
-  const skills = ['JavaScript (ES6+)', 'TypeScript', 'React', 'Eleventy', 'Node.js', 'WordPress'];
+  // ========== TES COMPÉTENCES (basées sur ton projet) ==========
+  const skills = [
+    'Angular',
+    'Spring Boot',
+    'Java',
+    'TypeScript',
+    'MySQL',
+    'REST APIs',
+    'Git & GitHub',
+    'JWT Security',
+  ];
 
   return (
     <StyledAboutSection id="about" ref={revealContainer}>
@@ -135,33 +128,26 @@ const About = () => {
         <StyledText>
           <div>
             <p>
-              Hello! My name is Brittany and I enjoy creating things that live on the internet. My
-              interest in web development started back in 2012 when I decided to try editing custom
-              Tumblr themes — turns out hacking together a custom reblog button taught me a lot
-              about HTML &amp; CSS!
+              I'm <strong>Elleuch Mohamed</strong>, a Full Stack Developer based in Tunisia.
+              I recently completed my Applied License in Computer Science Applied to Management
+              from the <strong>University of Sfax</strong> (2025-2026).
             </p>
 
             <p>
-              Fast-forward to today, and I’ve had the privilege of working at{' '}
-              <a href="https://us.mullenlowe.com/">an advertising agency</a>,{' '}
-              <a href="https://starry.com/">a start-up</a>,{' '}
-              <a href="https://www.apple.com/">a huge corporation</a>, and{' '}
-              <a href="https://scout.camd.northeastern.edu/">a student-led design studio</a>. My
-              main focus these days is building accessible, inclusive products and digital
-              experiences at <a href="https://upstatement.com/">Upstatement</a> for a variety of
-              clients.
+              My passion for web development led me to build a complete management platform
+              for an educational Islamic association as my final year project.
+              This application handles user registration, group management, real-time messaging,
+              memorization tracking (Quran & Hadiths), and even an AI assistant.
             </p>
 
             <p>
-              I also recently{' '}
-              <a href="https://www.newline.co/courses/build-a-spotify-connected-app">
-                launched a course
-              </a>{' '}
-              that covers everything you need to build a web app with the Spotify API using Node
-              &amp; React.
+              During my internship at <strong>Association de Préservation du Coran et des Bonnes Mœurs (Centre Elborji)</strong>,
+              I worked closely with administrators, friends, and teachers to understand their needs and
+              deliver a solution that replaces manual paper-based processes with a modern,
+              secure, and user-friendly web platform.
             </p>
 
-            <p>Here are a few technologies I’ve been working with recently:</p>
+            <p>Technologies I've been working with recently:</p>
           </div>
 
           <ul className="skills-list">
@@ -177,7 +163,7 @@ const About = () => {
               width={500}
               quality={95}
               formats={['AUTO', 'WEBP', 'AVIF']}
-              alt="Headshot"
+              alt="Elleuch Mohamed profile"
             />
           </div>
         </StyledPic>

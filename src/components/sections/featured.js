@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStaticQuery, graphql } from 'gatsby';
-import { GatsbyImage, getImage } from 'gatsby-plugin-image';
 import styled from 'styled-components';
 import sr from '@utils/sr';
 import { srConfig } from '@config';
@@ -94,7 +93,8 @@ const StyledProject = styled.li`
   .project-content {
     position: relative;
     grid-column: 1 / 7;
-    grid-row: 1 / -1;
+    grid-row: auto ;
+    min-height: auto;
 
     @media (max-width: 1080px) {
       grid-column: 1 / 9;
@@ -179,6 +179,50 @@ const StyledProject = styled.li`
       color: var(--white);
       font-weight: normal;
     }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0.5rem 0;
+
+      li {
+        position: relative;
+        padding-left: 1.25rem;
+        margin-bottom: 0.5rem;
+
+        &:before {
+          content: '▹';
+          position: absolute;
+          left: 0;
+          color: var(--green);
+        }
+      }
+    }
+
+    h3 {
+      margin: 1.25rem 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: var(--white);
+    }
+
+    h3:first-of-type {
+      margin-top: 0;
+    }
+
+    .section-header {
+      font-weight: 600;
+      color: var(--green);
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.25rem 1rem;
+      margin: 0.5rem 0;
+    }
   }
 
   .project-tech-list {
@@ -191,19 +235,29 @@ const StyledProject = styled.li`
     list-style: none;
 
     li {
-      margin: 0 20px 5px 0;
-      color: var(--light-slate);
+      margin: 0 10px 10px 0;
+      padding: 4px 12px;
+      background-color: rgba(100, 255, 218, 0.1);
+      color: var(--green);
       font-family: var(--font-mono);
       font-size: var(--fz-xs);
+      border-radius: 20px;
       white-space: nowrap;
+      transition: var(--transition);
+    }
+
+    li:hover {
+      background-color: rgba(100, 255, 218, 0.2);
+      transform: translateY(-2px);
     }
 
     @media (max-width: 768px) {
       margin: 10px 0;
 
       li {
-        margin: 0 10px 5px 0;
-        color: var(--lightest-slate);
+        margin: 0 8px 8px 0;
+        padding: 3px 10px;
+        font-size: 11px;
       }
     }
   }
@@ -242,10 +296,14 @@ const StyledProject = styled.li`
 
   .project-image {
     ${({ theme }) => theme.mixins.boxShadow};
-    grid-column: 6 / -1;
+    grid-column: 3 / -1; 
     grid-row: 1 / -1;
     position: relative;
     z-index: 1;
+
+    @media (max-width: 1080px) {
+      grid-column: 4 / -1;  /* encore plus grand sur écrans moyens */
+    }
 
     @media (max-width: 768px) {
       grid-column: 1 / -1;
@@ -256,49 +314,32 @@ const StyledProject = styled.li`
     a {
       width: 100%;
       height: 100%;
-      background-color: var(--green);
+      background-color: transparent;  /* plus de fond vert */
       border-radius: var(--border-radius);
       vertical-align: middle;
+      display: block;
+      cursor: pointer;
 
       &:hover,
       &:focus {
         background: transparent;
         outline: 0;
-
-        &:before,
-        .img {
-          background: transparent;
-          filter: none;
-        }
-      }
-
-      &:before {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 3;
-        transition: var(--transition);
-        background-color: var(--navy);
-        mix-blend-mode: screen;
       }
     }
 
     .img {
       border-radius: var(--border-radius);
-      mix-blend-mode: multiply;
-      filter: grayscale(100%) contrast(1) brightness(90%);
+      /* SUPPRESSION des filtres : plus de gris, plus de fusion */
+      filter: none;
+      mix-blend-mode: normal;
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.3s ease;  /* léger zoom au survol (optionnel) */
+    }
 
-      @media (max-width: 768px) {
-        object-fit: cover;
-        width: auto;
-        height: 100%;
-        filter: grayscale(100%) contrast(1) brightness(50%);
-      }
+    .img:hover {
+      transform: scale(1.02);  /* petit effet de zoom, pas de changement de couleur */
     }
   }
 `;
@@ -314,14 +355,7 @@ const Featured = () => {
           node {
             frontmatter {
               title
-              cover {
-                childImageSharp {
-                  gatsbyImageData(width: 700, placeholder: BLURRED, formats: [AUTO, WEBP, AVIF])
-                }
-              }
               tech
-              github
-              external
               cta
             }
             html
@@ -336,11 +370,25 @@ const Featured = () => {
   const revealProjects = useRef([]);
   const prefersReducedMotion = usePrefersReducedMotion();
 
+  // Diaporama automatique (5 secondes)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = ['/c1.png', '/c2.png', '/c3.png', '/c4.png', '/c5.png'];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  const openImage = () => {
+    window.open(images[currentImageIndex], '_blank');
+  };
+
   useEffect(() => {
     if (prefersReducedMotion) {
       return;
     }
-
     sr.reveal(revealTitle.current, srConfig());
     revealProjects.current.forEach((ref, i) => sr.reveal(ref, srConfig(i * 100)));
   }, []);
@@ -355,8 +403,7 @@ const Featured = () => {
         {featuredProjects &&
           featuredProjects.map(({ node }, i) => {
             const { frontmatter, html } = node;
-            const { external, title, tech, github, cover, cta } = frontmatter;
-            const image = getImage(cover);
+            const { title, tech } = frontmatter;
 
             return (
               <StyledProject key={i} ref={el => (revealProjects.current[i] = el)}>
@@ -380,30 +427,16 @@ const Featured = () => {
                         ))}
                       </ul>
                     )}
-
-                    <div className="project-links">
-                      {cta && (
-                        <a href={cta} aria-label="Course Link" className="cta">
-                          Learn More
-                        </a>
-                      )}
-                      {github && (
-                        <a href={github} aria-label="GitHub Link">
-                          <Icon name="GitHub" />
-                        </a>
-                      )}
-                      {external && !cta && (
-                        <a href={external} aria-label="External Link" className="external">
-                          <Icon name="External" />
-                        </a>
-                      )}
-                    </div>
                   </div>
                 </div>
 
                 <div className="project-image">
-                  <a href={external ? external : github ? github : '#'}>
-                    <GatsbyImage image={image} alt={title} className="img" />
+                  <a onClick={openImage}>
+                    <img 
+                      src={images[currentImageIndex]} 
+                      alt={`${title} screenshot ${currentImageIndex + 1}`} 
+                      className="img" 
+                    />
                   </a>
                 </div>
               </StyledProject>
